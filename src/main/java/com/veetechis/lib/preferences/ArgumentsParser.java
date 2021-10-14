@@ -53,6 +53,18 @@ public class ArgumentsParser
 	
 	/**
 	 * <p>
+	 * Creates a new instance of <code>ArgsParser</code> with the given argument
+	 * switch and parameter separator.
+	 * </p>
+	 */
+	public ArgumentsParser( String argSwitch, String parmSep )
+	{
+		setArgSwitch( argSwitch );
+		setParmSeparator( parmSep );
+	}
+	
+	/**
+	 * <p>
 	 * Sets the argument switch for the next call to <code>parse</code>.
 	 * </p>
 	 *
@@ -115,7 +127,7 @@ public class ArgumentsParser
 	 *
 	 * @param  args				the argument list to parse.
 	 * @return					the arguments as a <code>key=value</code> list.
-	 * @throws					com.vtis.util.KeyValueException
+	 * @throws					com.veetechis.lib.util.KeyValueException
 	 *							if the given list does not contain switched
 	 *								arguments.
 	 */

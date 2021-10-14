@@ -27,6 +27,14 @@ dist/
 # JetBrains IDE
 .idea/
 
+# Eclipse IDE
+.classpath
+.project
+.settings/
+
+# NetBeans IDE
+nbactions.xml
+
 # Unit test reports
 TEST*.xml
 
@@ -48,4 +56,3 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
-
