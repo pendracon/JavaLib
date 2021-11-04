@@ -144,7 +144,7 @@ public class ArgumentsParser
 			arg = argList.get( i );
 			if( arg.startsWith( argSwitch ) )
 			{
-				parm = argList.get( i + 1 );
+				parm = (i + 1 == argList.size() ? "" : argList.get(i + 1));
 				if( parm.startsWith( argSwitch ) )
 				{
 					parm = "";
