@@ -25,21 +25,26 @@ extends StringWriter
 		writer.endObject();
 
 		writer.startObject( "Object2" );
-		writer.addQuotedField( "String3", "Value3" );
-		writer.addQuotedField( "String4", "Value4", false );
+		writer.addStringField( "String3", "Value3" );
+		writer.addStringField( "String4", "Value4", false );
 		writer.endObject();
 
 		writer.startList( "List1" );
 		writer.startObject();
-		writer.addQuotedField( "String5", "Value5" );
+		writer.startObject( "ListItemObject1" );
+		writer.addStringField( "String5", "Value5" );
 		writer.startObject( "Object3" );
 		writer.addUnquotedField( "Number1", "100", false );
 		writer.endObject( false );
 		writer.endObject();
-		writer.startObject();
-		writer.addQuotedField( "String6", "Value6" );
+		writer.startObject( "ListItemObject2" );
+		writer.addStringField( "String6", "Value6" );
 		writer.startObject( "Object4" );
-		writer.addUnquotedField( "Number2", "200", false );
+		writer.addNumberField( "Number2", Integer.valueOf(200) );
+		writer.addNumberField( "Number3", Float.valueOf(300.3f) );
+		writer.addBooleanField( "Boolean1", Boolean.TRUE );
+		writer.addBooleanField( "Boolean2", Boolean.FALSE, false );
+		writer.endObject( false );
 		writer.endObject( false );
 		writer.endObject( false );
 		writer.endList();
@@ -120,6 +125,67 @@ extends StringWriter
 		if (markNext) writeNextMark();
 	}
 	
+	/**
+	 * Adds the key/value pair to the document as a new string entry with a
+	 * field separator character.
+	 */
+	public void addStringField( String key, String value )
+	{
+		addStringField( key, value, true );
+	}
+
+	/**
+	 * Adds the key/value pair to the document as a new string entry. If
+	 * 'markNext' is true then the entry is ended with a field separator
+	 * character (",").  If value is null then the method does nothing.
+	 */
+	public void addStringField( String key, String value, boolean markNext )
+	{
+		addQuotedField( key, value, markNext );
+	}
+
+	/**
+	 * Adds the key/value pair to the document as a new numeric entry with a
+	 * field separator character.
+	 */
+	public void addNumberField( String key, Number value )
+	{
+		addNumberField( key, value, true );
+	}
+
+	/**
+	 * Adds the key/value pair to the document as a new numeric entry. If
+	 * 'markNext' is true then the entry is ended with a field separator
+	 * character (",").  If value is null then the method does nothing.
+	 */
+	public void addNumberField( String key, Number value, boolean markNext )
+	{
+		if (value != null) {
+			addUnquotedField( key, value.toString(), markNext );
+		}
+	}
+
+	/**
+	 * Adds the key/value pair to the document as a new boolean entry with a
+	 * field separator character.
+	 */
+	public void addBooleanField( String key, Boolean value )
+	{
+		addBooleanField( key, value, true );
+	}
+
+	/**
+	 * Adds the key/value pair to the document as a new boolean entry. If
+	 * 'markNext' is true then the entry is ended with a field separator
+	 * character (",").  If value is null then the method does nothing.
+	 */
+	public void addBooleanField( String key, Boolean value, boolean markNext )
+	{
+		if (value != null) {
+			addUnquotedField( key, value.toString(), markNext );
+		}
+	}
+
 	/**
 	 * Adds the key/value pair to the document as a new entry with quoted
 	 * parameters and ended with a field separator character (e.g. '"key":
