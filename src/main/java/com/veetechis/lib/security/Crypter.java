@@ -5,8 +5,14 @@ import java.io.ByteArrayOutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
@@ -44,7 +50,19 @@ public class Crypter
 		AES_WEAK( "AES", 128 ),
 		AES_MEDIUM( "AES", 192 ),
 		AES_STRONG( "AES", 256 ),
-		AES_CBC_PKCS5( "AES/CBC/PKCS5Padding", -1 );
+		AES_CBC_PKCS5( "AES/CBC/PKCS5Padding", -1 ),
+		DSA_WEAK( "DSA", 512 ),
+		DSA_MEDIUM( "DSA", 1024 ),
+		DSA_STRONG( "DSA", 2048 ),
+		ECDSA_WEAK( "EC", 256 ),
+		ECDSA_MEDIUM( "EC", 512 ),
+		ECDSA_STRONG( "EC", 1024 ),
+		SHA_WEAK( "SHA-1", 1 ),
+		SHA_MEDIUM( "SHA-256", 256 ),
+		SHA_STRONG( "SHA-512", 512 ),
+		SHA_ECDSA_WEAK( "SHA1withECDSA", 1 ),
+		SHA_ECDSA_MEDIUM( "SHA256withECDSA", 256 ),
+		SHA_ECDSA_STRONG( "SHA512withECDSA", 512 );
 
 		/**
 		 * Returns the cryptographic algorithm of this cipher.
@@ -99,6 +117,85 @@ public class Crypter
 	throws CrypterException
 	{
 		return dencrypt( Cipher.DECRYPT_MODE, strength, input, key, iv );
+	}
+
+	/**
+	 * Returns a cyptographic hash (digest) for the given data using the
+	 * specified cipher strength.
+	 * 
+	 * @param strength  the hash strength.
+	 * @param input  the data to digest.
+	 * @return  the message digest.
+	 * @throws CrypterException
+	 */
+	public static byte[] digest( CipherStrength strength, byte[] input )
+	throws CrypterException
+	{
+		validateKeyLength( strength );
+
+		byte[] hash;
+		try {
+			MessageDigest md = MessageDigest.getInstance( strength.algorithm() );
+			hash = md.digest( input );
+		}
+		catch (Exception e) {
+			throw new CrypterException( "Error creating message digest.", e );
+		}
+
+		return hash;
+	}
+
+	/**
+	 * Returns a cyptographic signature for the given data using the specified
+	 * cipher strength and private key.
+	 * 
+	 * @param strength  the signature strength.
+	 * @param input  the data to sign.
+	 * @param key  the private key to use for signing.
+	 * @return  the data signature.
+	 * @throws CrypterException
+	 */
+	public static byte[] sign( CipherStrength strength, byte[] input, PrivateKey key )
+	throws CrypterException
+	{
+		validateKeyLength( strength );
+
+		byte[] signature;
+		try {
+			Signature signer = Signature.getInstance( strength.algorithm() ); 
+			signer.initSign( key );
+			signer.update( input );
+			signature = signer.sign();
+		}
+		catch (Exception e) {
+			throw new CrypterException( "Error while signing data.", e );
+		}
+
+		return signature;
+	}
+
+	/**
+	 * Returns a randomly generated digital signature key pair.
+	 * 
+	 * @param size  the strength of the generated key.
+	 * @throws CrypterException
+	 */
+	public static KeyPair generateSignatureKeys( CipherStrength strength )
+	throws CrypterException
+	{
+		validateKeyLength( strength );
+
+		KeyPair keyPair;
+		try {
+			KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance( strength.algorithm() );
+			keyGenerator.initialize( strength.length() );
+			keyPair = keyGenerator.generateKeyPair();
+		}
+		catch (Exception e) {
+			throw new CrypterException( "Error while generating key pair.", e );
+		}
+
+		return keyPair;
 	}
 
 	/**
